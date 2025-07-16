@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-pt">
 <head>
   <meta charset="UTF-8">
   <title>Z.</title>
@@ -11,23 +11,64 @@
       text-align: center;
       padding-top: 100px;
     }
-    input {
+
+    input, button {
       padding: 10px;
       font-size: 16px;
       margin: 10px;
+      border: none;
+      border-radius: 5px;
     }
+
+    input {
+      width: 200px;
+      text-align: center;
+    }
+
     button {
-      padding: 10px 20px;
-      font-size: 16px;
-      cursor: pointer;
+      background-color: #444;
+      color: #fff;
+      transition: background-color 0.3s;
     }
+
+    button:hover {
+      background-color: #666;
+    }
+
     #status {
       margin-top: 20px;
       font-size: 18px;
+      transition: opacity 0.5s;
     }
+
+    #prompt {
+      font-size: 20px;
+      margin-bottom: 10px;
+      transition: opacity 0.5s;
+    }
+
+    .fade {
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+
     #download {
-      margin-top: 30px;
+      margin-top: 40px;
       display: none;
+      animation: fadeIn 1s ease forwards;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .success {
+      color: #0f0;
+    }
+
+    .error {
+      color: #f33;
     }
   </style>
 </head>
@@ -42,7 +83,7 @@
   <div id="download">
     <p>✅ Acesso liberado.</p>
     <a href="zaizy.zip" download>
-      <button>📁 Download </button>
+      <button>📁 zaizy.zip </button>
     </a>
   </div>
 
@@ -62,33 +103,47 @@
     }
 
     function checkPassword() {
-      const input = document.getElementById("input").value;
+      const inputField = document.getElementById("input");
+      const input = inputField.value.trim();
       const status = document.getElementById("status");
       const prompt = document.getElementById("prompt");
-
       const config = senhas[etapa];
+
       const entrada = normalizar(input, config.ignoreCase, config.ignoreAccent);
       const correta = normalizar(config.texto, config.ignoreCase, config.ignoreAccent);
 
       if (entrada === correta) {
-        etapa++;
-        document.getElementById("input").value = "";
+        status.className = "success";
+        status.innerText = "✔️ Password correta.";
 
-        if (etapa < senhas.length) {
-          prompt.innerText = `Inserir password ${etapa + 1}`;
-          status.innerText = "Senha correta.";
-        } else {
-          prompt.innerText = "";
+        // Transição suave para a próxima senha
+        setTimeout(() => {
+          etapa++;
+          inputField.value = "";
           status.innerText = "";
-          document.getElementById("input").style.display = "none";
-          document.querySelector("button").style.display = "none";
-          document.getElementById("download").style.display = "block";
-        }
+
+          if (etapa < senhas.length) {
+            prompt.classList.add("fade");
+            setTimeout(() => {
+              prompt.innerText = `Inserir password. ${etapa + 1}`;
+              prompt.classList.remove("fade");
+            }, 400);
+          } else {
+            prompt.classList.add("fade");
+            document.getElementById("input").style.display = "none";
+            document.querySelector("button").style.display = "none";
+            setTimeout(() => {
+              document.getElementById("download").style.display = "block";
+            }, 500);
+          }
+        }, 1000);
       } else {
-        status.innerText = "Password incorreta. Tente novamente.";
+        status.className = "error";
+        status.innerText = "❌ Passeord incorreta. Tente novamente.";
       }
     }
   </script>
 
 </body>
 </html>
+

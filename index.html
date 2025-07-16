@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8">
+  <title>Z.</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: #fff;
+      text-align: center;
+      padding-top: 100px;
+    }
+    input {
+      padding: 10px;
+      font-size: 16px;
+      margin: 10px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    #status {
+      margin-top: 20px;
+      font-size: 18px;
+    }
+    #download {
+      margin-top: 30px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Z.</h1>
+  <p id="prompt">Insira a password</p>
+  <input type="password" id="input" placeholder="Senha">
+  <button onclick="checkPassword()">Enviar</button>
+  <div id="status"></div>
+
+  <div id="download">
+    <p>✅ Acesso liberado.</p>
+    <a href="attached_assets/zaizy.zip" download>
+      <button>📁 Download </button>
+    </a>
+  </div>
+
+  <script>
+    const senhas = [
+      { texto: "WHISKEY", ignoreCase: true, ignoreAccent: true },
+      { texto: "BARRACÃO", ignoreCase: true, ignoreAccent: false },
+      { texto: "MARCO", ignoreCase: true, ignoreAccent: true }
+    ];
+
+    let etapa = 0;
+
+    function normalizar(str, ignoreCase, ignoreAccent) {
+      if (ignoreCase) str = str.toLowerCase();
+      if (ignoreAccent) str = str.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
+      return str;
+    }
+
+    function checkPassword() {
+      const input = document.getElementById("input").value;
+      const status = document.getElementById("status");
+      const prompt = document.getElementById("prompt");
+
+      const config = senhas[etapa];
+      const entrada = normalizar(input, config.ignoreCase, config.ignoreAccent);
+      const correta = normalizar(config.texto, config.ignoreCase, config.ignoreAccent);
+
+      if (entrada === correta) {
+        etapa++;
+        document.getElementById("input").value = "";
+
+        if (etapa < senhas.length) {
+          prompt.innerText = `Inserir password ${etapa + 1}`;
+          status.innerText = "Senha correta.";
+        } else {
+          prompt.innerText = "";
+          status.innerText = "";
+          document.getElementById("input").style.display = "none";
+          document.querySelector("button").style.display = "none";
+          document.getElementById("download").style.display = "block";
+        }
+      } else {
+        status.innerText = "Password incorreta. Tente novamente.";
+      }
+    }
+  </script>
+
+</body>
+</html>
